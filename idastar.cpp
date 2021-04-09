@@ -205,7 +205,7 @@ int
 main()
 {
     int nbStacks = 4;
-    int nbBlocs = 16;
+    int nbBlocs = 20;
     State state = State(nbBlocs,nbStacks);
     state.setInitial();
     state.display();

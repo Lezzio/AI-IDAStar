@@ -137,6 +137,7 @@ int State::compare(const int *stack2, const int *top2, const int *next2) const {
 
 int a = 0;
 
+/*
 int State::heuristic() {
 
     int wrongStack = 0;
@@ -190,4 +191,80 @@ int State::heuristic() {
     cout << "H2 = " << d << " | P1 = " << result << endl;
     if(d > result) return d;
     else return result;
+}
+*/
+int State::heuristic() {
+    int h=0;
+    int h2=0;
+    for(int i=0;i<nbBlocs;i++){
+        if(stack[i]!=nbStacks-1){
+            h++;
+            h2++;
+            int suivant=next[i];
+            while(suivant!=-1){
+                if(suivant>i){
+                    h++; break;
+                }
+                suivant=next[suivant];
+            }
+        } else {
+            int suivant=next[i];
+            int attendu=i+1;
+            while(suivant!=-1){
+                if(suivant!=attendu){
+                    h=h+2;
+                    h2+=2;
+                    break;
+                }
+                attendu++;
+                suivant=next[suivant];
+            }
+        }
+    }
+
+    if(h2>=h){
+        return h2;
+    } else {
+        return h;
+    }
+}
+
+int State::heuristic() {
+    int wrongStack = 0;
+    int wrongOrder = 0;
+    int lastStack = this->getNbStacks() - 1;
+    int lastBlock = this->nbBlocs - 1;
+
+    for (int i = 0; i < lastStack; i++) {
+        int element = this->top[i];
+        int toInverseCount = 0;
+        while (element != -1) {
+            wrongStack++;
+            int el = this->top[i];
+            int inferiorCount = 0;
+            while (el != element) {
+                if (el < element) {
+                    inferiorCount++;
+                }
+                el = this->next[el];
+            }
+            if (inferiorCount > toInverseCount) {
+                toInverseCount = inferiorCount;
+            }
+            element = this->next[element];
+        }
+        wrongStack += toInverseCount;
+    }
+    int element = this->top[lastStack];
+    while (element != -1) {
+        int j = element;
+        while (j < lastBlock && this->next[j] == j + 1) {
+            j++;
+        }
+        if (j != lastBlock || this->next[j] != -1) {
+            wrongOrder++;
+        }
+        element = this->next[element];
+    }
+    return wrongStack + 2 * wrongOrder;
 }
